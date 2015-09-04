@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+        "log"
 )
 
 const DefaultUrl = "api.logentries.com:20000"
@@ -31,6 +32,7 @@ func New(url, token string) (*Client, error) {
 
 func (c *Client) Write(b []byte) (int, error) {
 	s := fmt.Sprintf("%s %s\n", c.token, b)
+        log.Print(s)
 	return c.writeAndRetry([]byte(s))
 }
 
@@ -39,6 +41,7 @@ func (c *Client) connect() error {
 		c.conn.Close()
 		c.conn = nil
 	}
+        log.Print("Connecting...")
 	conn, err := tls.Dial("tcp", c.url, &tls.Config{RootCAs: c.pool})
 	if err != nil {
 		return err
@@ -56,6 +59,7 @@ func (c *Client) writeAndRetry(b []byte) (int, error) {
 		if n, err := c.write(b); err == nil {
 			return n, err
 		}
+                log.Print("This line probably means a connection error was ignored.")
 	}
 	if err := c.connect(); err != nil {
 		return 0, err

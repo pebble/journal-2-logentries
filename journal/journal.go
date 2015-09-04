@@ -42,5 +42,6 @@ func Follow(socket string) (<-chan []byte, error) {
 			log.Println(err.Error())
 		}
 	}()
+        log.Print(logs)
 	return logs, nil
 }
